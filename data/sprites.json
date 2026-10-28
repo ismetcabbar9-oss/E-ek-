@@ -1,0 +1,45 @@
+{
+	"_doc": "Sprite tanımları. 'mode': 'single' (tek kare) ya da 'sheet' (yatay sprite sheet, hframes kare). 'procedural': kodla yapılan squash/stretch efekti: bounce | stretch | squash | shake | none. Dosya yoksa kod renkli placeholder çizer.",
+	"characters": {
+		"zeynep": {
+			"name": "Zeynep'in eşeği",
+			"owner": "Zeynep",
+			"avatar": "res://assets/avatar_zeynep.png",
+			"accent": "#ff5fa2",
+			"sprite_set": "donkey"
+		},
+		"ismet": {
+			"name": "İsmet'in eşeği",
+			"owner": "İsmet",
+			"avatar": "res://assets/avatar_ismet.png",
+			"accent": "#4fb3ff",
+			"sprite_set": "donkey"
+		}
+	},
+	"sprite_sets": {
+		"donkey": {
+			"display_height": 30,
+			"avatar_size": 16,
+			"hitbox": { "w": 16, "h": 26, "duck_h": 12 },
+			"anims": {
+				"run":  { "texture": "res://assets/donkey.png", "mode": "single", "hframes": 1, "fps": 0, "procedural": "bounce" },
+				"jump": { "texture": "res://assets/donkey.png", "mode": "single", "hframes": 1, "fps": 0, "procedural": "stretch" },
+				"duck": { "texture": "res://assets/donkey.png", "mode": "single", "hframes": 1, "fps": 0, "procedural": "squash" },
+				"hit":  { "texture": "res://assets/donkey_sad.png", "mode": "single", "hframes": 1, "fps": 0, "procedural": "shake" }
+			},
+			"_side_view_example": {
+				"run":  { "texture": "res://assets/donkey_side_run.png", "mode": "sheet", "hframes": 6, "fps": 12, "procedural": "none" },
+				"jump": { "texture": "res://assets/donkey_side_jump.png", "mode": "sheet", "hframes": 2, "fps": 8, "procedural": "none" },
+				"duck": { "texture": "res://assets/donkey_side_duck.png", "mode": "sheet", "hframes": 4, "fps": 12, "procedural": "none" },
+				"hit":  { "texture": "res://assets/donkey_side_hit.png", "mode": "sheet", "hframes": 2, "fps": 6, "procedural": "shake" }
+			}
+		},
+		"farmer": {
+			"display_height": 34,
+			"anims": {
+				"run":    { "texture": "res://assets/farmer_run.png", "mode": "sheet", "hframes": 6, "fps": 10, "procedural": "bounce" },
+				"catch":  { "texture": "res://assets/farmer_catch.png", "mode": "sheet", "hframes": 4, "fps": 8, "procedural": "none" }
+			}
+		}
+	}
+}
