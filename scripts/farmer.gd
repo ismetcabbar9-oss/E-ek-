@@ -35,7 +35,7 @@ func setup(gy: float) -> void:
 	_shout.add_theme_color_override("font_color", Color("#fbf236"))
 	_shout.add_theme_color_override("font_outline_color", Color("#120d16"))
 	_shout.add_theme_constant_override("outline_size", 3)
-	_shout.position = Vector2(-4, -50)
+	_shout.position = Vector2(-10, -60)
 	_shout.visible = false
 	add_child(_shout)
 
@@ -69,6 +69,6 @@ func _process(delta: float) -> void:
 		position.x = lerpf(position.x, _x_target + sin(_t * 1.3) * 3.0, 1.0 - exp(-2.5 * delta))
 	if _shout_t > 0.0:
 		_shout_t -= delta
-		_shout.position.y = -50.0 + sin(_t * 20.0) * 1.0
+		_shout.position.y = -60.0 + sin(_t * 20.0) * 1.0
 		if _shout_t <= 0.0:
 			_shout.visible = false

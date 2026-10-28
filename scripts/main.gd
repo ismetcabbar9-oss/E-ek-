@@ -9,6 +9,8 @@ const FARMER_SHOUTS := ["GEL BURAYA!", "EŞŞEKLEEER!", "HAVUÇLARIM!", "DUR DED
 
 var state := State.RUNNING
 var world: World
+var themes: ThemeManager
+var background: Background
 var player: Donkey
 var partner: Donkey
 var farmer: Farmer
@@ -22,6 +24,9 @@ var _hits_bar: Control
 var _over: Control
 var _over_t := 0.0
 var _shake := 0.0
+var _theme_index := -1
+var _banner: Label
+var _banner_t := 0.0
 var _rng := RandomNumberGenerator.new()
 
 
@@ -31,9 +36,15 @@ func _ready() -> void:
 		Game.seed_code = Game.random_code()
 	seed_code = Game.seed_code
 
+	themes = ThemeManager.new()
+	background = Background.new()
+	add_child(background)
 	world = World.new()
+	world.themes = themes
 	add_child(world)
 	world.setup(Game.code_to_seed(seed_code))
+	background.world = world
+	background.themes = themes
 
 	farmer = Farmer.new()
 	add_child(farmer)
@@ -55,12 +66,14 @@ func _ready() -> void:
 	player.crashed.connect(_on_crash)
 
 	_build_hud()
+	_check_theme(true)
 	Audio.start_music()
 
 
 func _physics_process(delta: float) -> void:
 	if state == State.RUNNING:
 		world.advance(delta)
+		_check_theme(false)
 	for d in [partner, player]:
 		d.step(delta, world)
 		if state == State.RUNNING:
@@ -78,6 +91,28 @@ func _process(delta: float) -> void:
 		position = Vector2.ZERO
 	if state == State.OVER:
 		_over_t += delta
+	if _banner_t > 0.0:
+		_banner_t -= delta
+		var k := clampf(minf(_banner_t, 2.6 - _banner_t) / 0.3, 0.0, 1.0)
+		_banner.modulate.a = k
+		_banner.position.y = 44.0 - (1.0 - k) * 10.0
+		_banner.visible = _banner_t > 0.0
+
+
+## Oyuncunun bulunduğu yerin teması değiştiyse arka planı, müziği ve afişi güncelle.
+func _check_theme(first: bool) -> void:
+	var i := themes.index_at(world.scroll + PLAYER_X)
+	if i == _theme_index:
+		return
+	_theme_index = i
+	var th := themes.theme_by_index(i)
+	background.set_theme(i, first)
+	Audio.set_music(th.get("music", {}))
+	if not first:
+		Audio.start_music()
+		Audio.sfx("theme")
+	_banner.text = str(th.get("banner", th.get("name", "")))
+	_banner_t = 2.6
 
 
 func _on_crash(d: Donkey, _o: Dictionary) -> void:
@@ -133,6 +168,12 @@ func _build_hud() -> void:
 	_code_label.size = Vector2(120, 12)
 	_code_label.position = Vector2(194, 4)
 	_hud.add_child(_code_label)
+	_banner = UI.label("", 12, Color("#fbf236"), 4)
+	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_banner.size = Vector2(320, 18)
+	_banner.position = Vector2(0, 44)
+	_banner.visible = false
+	_hud.add_child(_banner)
 	_hits_bar = Control.new()
 	_hits_bar.position = Vector2(254, 18)
 	_hits_bar.draw.connect(_draw_hits)

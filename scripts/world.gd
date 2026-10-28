@@ -173,6 +173,11 @@ func _draw_ground() -> void:
 			seg_end = minf(VIEW_W, themes.next_boundary(wx) - scroll)
 		var g: Dictionary = theme_at(wx).ground
 		var w := seg_end - x
+		var tile_tex := _texture(str(g.get("tile", ""))) if g.has("tile") else null
+		if tile_tex:
+			_draw_ground_tiles(tile_tex, x, seg_end)
+			x = seg_end
+			continue
 		draw_rect(Rect2(x, GROUND_Y, w, 180.0 - GROUND_Y), Color(g.fill))
 		draw_rect(Rect2(x, GROUND_Y, w, 3), Color(g.top))
 		# Hareket hissi için kayan detay pikselleri.
@@ -189,6 +194,19 @@ func _draw_ground() -> void:
 	for o in obstacles_on_screen():
 		if o.kind == "pit":
 			_draw_pit(o)
+
+
+func _draw_ground_tiles(tex: Texture2D, from_x: float, to_x: float) -> void:
+	# Zemin dokusu dünyayla aynı hızda kayar; segment sınırında kırpılır.
+	var tw := float(tex.get_width())
+	var th := float(tex.get_height())
+	var px := floorf((scroll + from_x) / tw) * tw - scroll
+	while px < to_x:
+		var src_x := maxf(0.0, from_x - px)
+		var src_w := minf(tw, to_x - px) - src_x
+		if src_w > 0.0:
+			draw_texture_rect_region(tex, Rect2(px + src_x, GROUND_Y, src_w, th), Rect2(src_x, 0, src_w, th))
+		px += tw
 
 
 func _draw_pit(o: Dictionary) -> void:

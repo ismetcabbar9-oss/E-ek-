@@ -14,7 +14,20 @@ func _ready() -> void:
 	_out = args[2] if args.size() > 2 else "shot.png"
 	if args.size() > 3:
 		Game.seed_code = args[3]
-	add_child.call_deferred(load(scene).instantiate())
+	var inst: Node = load(scene).instantiate()
+	add_child.call_deferred(inst)
+	if args.size() > 4:
+		_jump_to.call_deferred(inst, float(args[4]))
+
+
+## Hata ayıklama: dünyayı verilen metreye ışınla (tema görüntüleri için).
+func _jump_to(inst: Node, m: float) -> void:
+	await get_tree().process_frame
+	var w: World = inst.world
+	w.scroll = m * World.PX_PER_M
+	w.obstacles.clear()
+	w._next_x = w.scroll + 200.0
+	w._generate_until(w.scroll + 600.0)
 
 
 func _process(_d: float) -> void:
